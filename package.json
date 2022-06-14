@@ -19,6 +19,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.2",
     "@types/uuid": "^8.3.4",
+    "accordionify": "^0.1.3",
     "axios": "^0.27.2",
     "immer": "^9.0.15",
     "next": "12.1.6",

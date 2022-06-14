@@ -3,7 +3,7 @@ const defaultTheme = require('tailwindcss/defaultTheme');
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   corePlugins: {
-    outline: false,
+    // outline: false,
   },
   jit: true,
   theme: {
@@ -36,7 +36,6 @@ module.exports = {
         },
       },
       fontFamily: {
-        ybakh: ['ybakh', ...defaultTheme.fontFamily.sans],
         nunito: ['Nunito', ...defaultTheme.fontFamily.sans],
       },
       padding: {
@@ -98,7 +97,4 @@ module.exports = {
     extend: {},
   },
   plugins: [],
-  // corePlugins: {
-  //   preflight: false,
-  // },
 };
