@@ -23,7 +23,7 @@ const AddQuestionForm = () => {
   }, [removeLastQuestion]);
 
   return (
-    <div>
+    <div className="max-w-xl mx-auto">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -31,9 +31,13 @@ const AddQuestionForm = () => {
           addQuestion({ question, answer, id: uuidv4() });
         }}
       >
+        <label className="block mb-2 cursor-pointer" htmlFor="question">
+          Question:
+        </label>
         <input
-          className="block mb-5 h-10 border border-neutral-400 rounded-lg px-4"
+          className="block w-full mb-5 h-10 border border-neutral-400 rounded-lg px-4"
           type="text"
+          id="question"
           placeholder="question"
           value={question}
           onChange={(e) => {
@@ -41,15 +45,21 @@ const AddQuestionForm = () => {
           }}
         />
 
+        <label className="block mb-2 cursor-pointer" htmlFor="answer">
+          Answer:
+        </label>
         <textarea
-          className="block pt-3 resize-none h-24 mb-5 border border-neutral-400 rounded-lg px-4"
+          id="answer"
+          className="block pt-3 w-full resize-none h-24 mb-5 border border-neutral-400 rounded-lg px-4"
           placeholder="answer"
           value={answer}
           onChange={(e) => {
             setAnswer(e.target.value);
           }}
         ></textarea>
-        <button type="submit">+ Add question</button>
+        <button className="text-white font-bold bg-purple-700 px-5 py-3 rounded-lg mx-auto table" type="submit">
+          + Add question
+        </button>
       </form>
     </div>
   );
