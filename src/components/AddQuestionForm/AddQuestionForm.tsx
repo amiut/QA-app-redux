@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuestions } from 'state/questions/hooks/useQuestions';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -6,7 +6,21 @@ const AddQuestionForm = () => {
   const [question, setQuestion] = useState<string>('');
   const [answer, setAnswer] = useState<string>('');
 
-  const { addQuestion } = useQuestions();
+  const { addQuestion, removeLastQuestion } = useQuestions();
+
+  useEffect(() => {
+    const undo = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'z') {
+        removeLastQuestion();
+      }
+    };
+
+    document.addEventListener('keydown', undo);
+
+    return () => {
+      document.removeEventListener('keydown', undo);
+    };
+  }, [removeLastQuestion]);
 
   return (
     <div>
