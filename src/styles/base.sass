@@ -1,0 +1,64 @@
+:focus-visible,
+button:focus
+  outline: none
+
+html
+  font-size: var(--font-size-base, 16px)
+  -webkit-scroll-behavior: smooth
+  scroll-behavior: smooth
+
+body
+  text-align: left
+  direction: ltr
+  background-repeat: no-repeat
+  background-size: cover
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  @apply text-base font-normal font-nunito
+
+svg.icon
+  display: inline-block
+  vertical-align: middle
+  line-height: 1
+  fill: currentColor
+  @apply transition-all
+
+  path
+    transition: inherit
+
+body.blurred
+  .site-wrap
+    filter: blur(10px)
+
+button
+  transition: all 250ms ease-in-out
+
+  &[data-loading]
+    opacity: .4
+
+.ltr
+  direction: ltr
+
+.rtl
+  direction: rtl
+
+a,
+input,
+select
+  -webkit-tap-highlight-color: transparent
+
+// Prevent ios zoom when focusing inputs
+@media screen and (-webkit-min-device-pixel-ratio:0)
+  select,
+  textarea,
+  input
+    font-size: 16px !important
+
+.alignfull
+  width: 100vw
+  left: 50%
+  right: 50%
+  margin-left: -50vw
+  margin-right: -50vw
+  position: relative
+  max-width: 100vw
