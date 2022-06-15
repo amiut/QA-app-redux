@@ -1,0 +1,12 @@
+.tooltip
+  @apply relative
+
+  &[aria-label]:before
+    content: attr(aria-label)
+    @apply absolute text-sm right-0 transition-all top-full bg-white p-4 font-normal z-10
+    @apply shadow-lg rounded-lg border border-neutral-300 w-48 text-center
+
+  &:not(.disabled-hover):not(:hover),
+  &.disabled-hover:not(.tooltip--visible)
+    &:before
+      @apply opacity-0 transform-gpu -translate-y-1
