@@ -1,14 +1,21 @@
 import Icon from '@components/Common/Icon';
-import { useEffect, useState } from 'react';
+import useOnClickOutside from '@hooks/useClickOutside';
+import useToggle from '@hooks/useToggle';
+import { useEffect, useRef, useState } from 'react';
 import { useQuestions } from 'state/questions/hooks/useQuestions';
 import { v4 as uuidv4 } from 'uuid';
 
 const AddQuestionForm = () => {
-  const [addQuestionHelpVisible, setAddQuestionHelpVisible] = useState<boolean>(false);
+  const [addQuestionHelp, toggleAddQuestionHelp] = useToggle();
   const [question, setQuestion] = useState<string>('');
   const [answer, setAnswer] = useState<string>('');
+  const addQuestionHeading = useRef<HTMLHeadingElement>(null);
 
   const { addQuestion, removeLastQuestion } = useQuestions();
+
+  useOnClickOutside(addQuestionHeading, () => {
+    if (addQuestionHelp) toggleAddQuestionHelp();
+  });
 
   useEffect(() => {
     const undo = (e: KeyboardEvent) => {
@@ -26,13 +33,15 @@ const AddQuestionForm = () => {
 
   return (
     <div className="max-w-xl mx-auto">
-      <h2 className="text-3xl font-bold flex items-center justify-center mb-6">
+      <h2 className="text-3xl font-bold flex max-w-max mx-auto items-center mb-6" ref={addQuestionHeading}>
         Add a Question{' '}
         <button
           type="button"
-          className="ml-3 tooltip disabled-hover"
+          className={`ml-3 tooltip disabled-hover ${addQuestionHelp ? 'tooltip--visible' : ''}`}
           aria-label="Here You can add a new question to the list"
-          onClick={() => {}}
+          onClick={() => {
+            toggleAddQuestionHelp();
+          }}
         >
           <Icon name="help" className="w-6 h-6" />
         </button>
@@ -43,9 +52,11 @@ const AddQuestionForm = () => {
           e.preventDefault();
 
           addQuestion({ question, answer, id: uuidv4() });
+          setQuestion('');
+          setAnswer('');
         }}
       >
-        <label className="block mb-2 cursor-pointer" htmlFor="question">
+        <label className="table mb-2 cursor-pointer" htmlFor="question">
           Question:
         </label>
         <input
@@ -59,7 +70,7 @@ const AddQuestionForm = () => {
           }}
         />
 
-        <label className="block mb-2 cursor-pointer" htmlFor="answer">
+        <label className="table mb-2 cursor-pointer" htmlFor="answer">
           Answer:
         </label>
         <textarea
