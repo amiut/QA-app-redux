@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
-import { addQuestion, removeLastAddedQuestion, removeQuestion } from './actions';
+import { addQuestion, removeAllQuestions, removeLastAddedQuestion, removeQuestion } from './actions';
 
 export interface IQuestion {
   question: string;
@@ -10,8 +10,8 @@ export interface IQuestion {
 }
 
 export interface IActivity {
-  type: 'added' | 'removed' | 'edited';
-  id: string;
+  type: 'added' | 'removed' | 'edited' | 'removedAll';
+  item: IQuestion | IQuestion[];
 }
 
 export interface IQuestionsState {
@@ -35,7 +35,7 @@ export default createReducer(initialState, (builder) =>
     .addCase(addQuestion, ({ questions, activities }, action) => {
       questions.push(action.payload);
       activities.push({
-        id: action.payload.id,
+        item: action.payload,
         type: 'added',
       });
     })
@@ -45,18 +45,29 @@ export default createReducer(initialState, (builder) =>
 
         if (question) {
           activities.push({
-            id: question.id,
+            item: question,
             type: 'removed',
           });
         }
       }
     })
-    .addCase(removeQuestion, (state, action) => {
+    .addCase(removeAllQuestions, (state) => {
       state.activities.push({
-        id: action.payload,
-        type: 'removed',
+        type: 'removedAll',
+        item: state.questions,
       });
+      state.questions = [];
+    })
+    .addCase(removeQuestion, (state, action) => {
+      const question = state.questions.find((q) => q.id === action.payload);
 
-      state.questions = state.questions.filter((question) => question.id !== action.payload);
+      if (question) {
+        state.activities.push({
+          item: question,
+          type: 'removed',
+        });
+
+        state.questions = state.questions.filter((question) => question.id !== action.payload);
+      }
     }),
 );

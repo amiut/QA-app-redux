@@ -1,6 +1,8 @@
 import Icon from '@components/Common/Icon';
 import useToggle from '@hooks/useToggle';
 import { Accordion, AccordionGroup, AccordionPanel, AccordionToggle, useAccordion } from 'accordionify';
+import produce from 'immer';
+import React, { useState } from 'react';
 import { useQuestions } from 'state/questions/hooks/useQuestions';
 import { IQuestion } from 'state/questions/reducer';
 
@@ -19,7 +21,9 @@ const AccordionifiedQItem = ({ question }: { question: IQuestion }) => {
 
 const QuestionsList = () => {
   const [removeTypeExpanded, toggleRemoveExpand] = useToggle();
-  const { questions } = useQuestions();
+  const [removeMode, toggleRemoveMode] = useToggle();
+  const [itemsToRemove, setItemsToRemove] = useState<IQuestion[]>([]);
+  const { questions, removeAllQuestions } = useQuestions();
 
   return (
     <div className="mb-10">
@@ -42,9 +46,36 @@ const QuestionsList = () => {
       */}
           <AccordionGroup atomic>
             {questions.map((question) => (
-              <Accordion key={question.id} className="w-full border mb-3 border-neutral-200 rounded-lg">
-                <AccordionifiedQItem question={question} />
-              </Accordion>
+              <div className="flex items-center" key={question.id}>
+                {removeMode && (
+                  <label className="flex w-10 h-10 justify-center items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setItemsToRemove(
+                            produce((draft) => {
+                              draft.push(question);
+                            }),
+                          );
+                        } else {
+                          setItemsToRemove(
+                            produce((draft) => {
+                              return draft.filter((q) => q.id !== question.id);
+                            }),
+                          );
+                        }
+                      }}
+                    />
+                  </label>
+                )}
+
+                <div className="flex-1 min-w-0">
+                  <Accordion className="w-full border mb-3 border-neutral-200 rounded-lg">
+                    <AccordionifiedQItem question={question} />
+                  </Accordion>
+                </div>
+              </div>
             ))}
           </AccordionGroup>
 
@@ -53,9 +84,20 @@ const QuestionsList = () => {
               Sort by A-Z
             </button>
 
-            <div className="bg-red-600 relative text-sm font-medium text-white h-8  mr-5 rounded-md flex">
-              <button type="button" className="px-3.5 relative">
-                Remove Individual Questions
+            <div className="bg-red-600 relative text-sm font-medium text-white h-8 rounded-md flex">
+              <button
+                type="button"
+                className="px-3.5 relative"
+                onClick={() => {
+                  if (removeMode && itemsToRemove.length) {
+                  } else {
+                    toggleRemoveMode();
+                  }
+                }}
+              >
+                {removeMode && itemsToRemove.length > 0
+                  ? `Remove Selected ${itemsToRemove.length} Items`
+                  : 'Remove Individual Questions'}
               </button>
               <button
                 onClick={() => {
@@ -69,12 +111,32 @@ const QuestionsList = () => {
 
               {removeTypeExpanded && (
                 <div className="more-options bg-red-600 mt-0.5 py-2 rounded-lg z-10 absolute top-full w-full left-0">
-                  <button type="button" className="px-3.5">
+                  <button
+                    type="button"
+                    className="px-3.5"
+                    onClick={() => {
+                      removeAllQuestions();
+                      toggleRemoveExpand();
+                    }}
+                  >
                     Remove All Questions
                   </button>
                 </div>
               )}
             </div>
+
+            {removeMode && itemsToRemove.length > 0 && (
+              <button
+                onClick={() => {
+                  setItemsToRemove([]);
+
+                  toggleRemoveMode();
+                }}
+                className="bg-gray-600 ml-3 px-3 h-8 text-sm font-medium text-white rounded-md"
+              >
+                Cancel selected
+              </button>
+            )}
           </div>
         </>
       ) : (

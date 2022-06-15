@@ -4,6 +4,7 @@ import { AppState } from 'state/store';
 
 import {
   addQuestion as addQuestionAction,
+  removeAllQuestions as removeAllQuestionsAction,
   removeLastAddedQuestion,
   removeQuestion as removeQuestionAction,
 } from '../actions';
@@ -16,6 +17,7 @@ export const useQuestions = () => {
   const addQuestion = useCallback((question: IQuestion) => dispatch(addQuestionAction(question)), [dispatch]);
   const removeQuestion = useCallback((id: string) => dispatch(removeQuestionAction(id)), [dispatch]);
   const removeLastQuestion = useCallback(() => dispatch(removeLastAddedQuestion()), [dispatch]);
+  const removeAllQuestions = useCallback(() => dispatch(removeAllQuestionsAction()), [dispatch]);
 
-  return { questions, addQuestion, removeQuestion, removeLastQuestion };
+  return { questions, addQuestion, removeQuestion, removeLastQuestion, removeAllQuestions };
 };
