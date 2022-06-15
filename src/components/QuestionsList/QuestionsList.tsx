@@ -23,7 +23,7 @@ const QuestionsList = () => {
   const [removeTypeExpanded, toggleRemoveExpand] = useToggle();
   const [removeMode, toggleRemoveMode] = useToggle();
   const [itemsToRemove, setItemsToRemove] = useState<IQuestion[]>([]);
-  const { questions, removeQuestion, removeAllQuestions } = useQuestions();
+  const { questions, removeQuestion, removeAllQuestions, sortAllQuestions } = useQuestions();
 
   return (
     <div className="mb-10">
@@ -80,7 +80,13 @@ const QuestionsList = () => {
           </AccordionGroup>
 
           <div className="flex justify-center">
-            <button type="button" className="bg-indigo-500 text-sm font-medium text-white h-8 px-3.5 mr-5 rounded-md">
+            <button
+              onClick={() => {
+                sortAllQuestions();
+              }}
+              type="button"
+              className="bg-indigo-500 text-sm font-medium text-white h-8 px-3.5 mr-5 rounded-md"
+            >
               Sort by A-Z
             </button>
 

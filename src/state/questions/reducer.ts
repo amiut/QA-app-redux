@@ -8,6 +8,7 @@ import {
   removeLastAddedQuestion,
   removeQuestion,
   setConfig,
+  sortQuestions,
 } from './actions';
 
 export interface IQuestion {
@@ -17,7 +18,7 @@ export interface IQuestion {
 }
 
 export interface IActivity {
-  type: 'added' | 'removed' | 'edited' | 'removedAll';
+  type: 'added' | 'removed' | 'edited' | 'removedAll' | 'sortAll';
   item: IQuestion | IQuestion[];
 }
 
@@ -89,6 +90,9 @@ export default createReducer(initialState, (builder) =>
 
         state.questions = state.questions.filter((question) => question.id !== action.payload);
       }
+    })
+    .addCase(sortQuestions, (state) => {
+      state.questions.sort((a, b) => a.question.localeCompare(b.question));
     })
     .addCase(setConfig, (state, action) => {
       state.config[action.payload.key] = action.payload.value;
