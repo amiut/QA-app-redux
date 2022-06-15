@@ -1,3 +1,5 @@
+import Icon from '@components/Common/Icon';
+import useToggle from '@hooks/useToggle';
 import { Accordion, AccordionGroup, AccordionPanel, AccordionToggle, useAccordion } from 'accordionify';
 import { useQuestions } from 'state/questions/hooks/useQuestions';
 import { IQuestion } from 'state/questions/reducer';
@@ -16,6 +18,7 @@ const AccordionifiedQItem = ({ question }: { question: IQuestion }) => {
 };
 
 const QuestionsList = () => {
+  const [removeTypeExpanded, toggleRemoveExpand] = useToggle();
   const { questions } = useQuestions();
 
   return (
@@ -44,6 +47,35 @@ const QuestionsList = () => {
               </Accordion>
             ))}
           </AccordionGroup>
+
+          <div className="flex justify-center">
+            <button type="button" className="bg-indigo-500 text-sm font-medium text-white h-8 px-3.5 mr-5 rounded-md">
+              Sort by A-Z
+            </button>
+
+            <div className="bg-red-600 relative text-sm font-medium text-white h-8  mr-5 rounded-md flex">
+              <button type="button" className="px-3.5 relative">
+                Remove Individual Questions
+              </button>
+              <button
+                onClick={() => {
+                  toggleRemoveExpand();
+                }}
+                type="button"
+                className="border-l px-1 border-red-700"
+              >
+                <Icon name="down" className="w-6 h-6 text-white" />
+              </button>
+
+              {removeTypeExpanded && (
+                <div className="more-options bg-red-600 mt-0.5 py-2 rounded-lg z-10 absolute top-full w-full left-0">
+                  <button type="button" className="px-3.5">
+                    Remove All Questions
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </>
       ) : (
         <div className="text-center bg-purple-100 rounded-lg py-5 text-purple-900 font-bold">
