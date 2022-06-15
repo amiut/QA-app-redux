@@ -8,17 +8,48 @@ export interface IQuestion {
   id: string;
 }
 
-export const initialState: IQuestion[] = [];
+export interface IActivity {
+  type: 'added' | 'removed' | 'edited';
+  id: string;
+}
+
+export interface IQuestionsState {
+  questions: IQuestion[];
+  activities: IActivity[];
+}
+
+export const initialState: IQuestionsState = {
+  questions: [],
+  activities: [],
+};
 
 export default createReducer(initialState, (builder) =>
   builder
-    .addCase(addQuestion, (state, action) => {
-      state.push(action.payload);
+    .addCase(addQuestion, ({ questions, activities }, action) => {
+      questions.push(action.payload);
+      activities.push({
+        id: action.payload.id,
+        type: 'added',
+      });
     })
-    .addCase(removeLastAddedQuestion, (state) => {
-      if (state.length) state.pop();
+    .addCase(removeLastAddedQuestion, ({ questions, activities }) => {
+      if (questions.length) {
+        const question = questions.pop();
+
+        if (question) {
+          activities.push({
+            id: question.id,
+            type: 'removed',
+          });
+        }
+      }
     })
-    .addCase(removeQuestion, (state, action) => {
-      return state.filter((question) => question.id !== action.payload);
+    .addCase(removeQuestion, ({ questions, activities }, action) => {
+      activities.push({
+        id: action.payload,
+        type: 'removed',
+      });
+
+      return { activities, questions: questions.filter((question) => question.id !== action.payload) };
     }),
 );

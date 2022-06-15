@@ -11,7 +11,7 @@ import { IQuestion } from '../reducer';
 
 export const useQuestions = () => {
   const dispatch = useDispatch();
-  const questions = useSelector((state: AppState) => state.questions);
+  const questions = useSelector((state: AppState) => state.questions.questions);
 
   const addQuestion = useCallback((question: IQuestion) => dispatch(addQuestionAction(question)), [dispatch]);
   const removeQuestion = useCallback((id: string) => dispatch(removeQuestionAction(id)), [dispatch]);
