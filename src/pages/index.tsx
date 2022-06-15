@@ -1,4 +1,5 @@
 import AddQuestionForm from '@components/AddQuestionForm';
+import AppConfig from '@components/AppConfig';
 import QuestionsList from '@components/QuestionsList';
 import type { NextPage } from 'next';
 import Head from 'next/head';
@@ -9,6 +10,8 @@ const Home: NextPage = () => {
       <Head>
         <title>Question/Answer app</title>
       </Head>
+
+      <AppConfig />
 
       <QuestionsList />
       <AddQuestionForm />

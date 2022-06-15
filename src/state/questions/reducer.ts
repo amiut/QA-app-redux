@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
-import { addQuestion, removeAllQuestions, removeLastAddedQuestion, removeQuestion } from './actions';
+import { addQuestion, removeAllQuestions, removeLastAddedQuestion, removeQuestion, setConfig } from './actions';
 
 export interface IQuestion {
   question: string;
@@ -14,9 +14,15 @@ export interface IActivity {
   item: IQuestion | IQuestion[];
 }
 
+export interface IConfig {
+  enterKeyIsSend: boolean;
+  sendAfter5s: boolean;
+}
+
 export interface IQuestionsState {
   questions: IQuestion[];
   activities: IActivity[];
+  config: IConfig;
 }
 
 const initialQuestion: IQuestion = {
@@ -28,6 +34,10 @@ const initialQuestion: IQuestion = {
 export const initialState: IQuestionsState = {
   questions: [initialQuestion],
   activities: [],
+  config: {
+    enterKeyIsSend: true,
+    sendAfter5s: false,
+  },
 };
 
 export default createReducer(initialState, (builder) =>
@@ -69,5 +79,8 @@ export default createReducer(initialState, (builder) =>
 
         state.questions = state.questions.filter((question) => question.id !== action.payload);
       }
+    })
+    .addCase(setConfig, (state, action) => {
+      state.config[action.payload.key] = action.payload.value;
     }),
 );

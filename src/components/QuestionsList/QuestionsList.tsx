@@ -23,7 +23,7 @@ const QuestionsList = () => {
   const [removeTypeExpanded, toggleRemoveExpand] = useToggle();
   const [removeMode, toggleRemoveMode] = useToggle();
   const [itemsToRemove, setItemsToRemove] = useState<IQuestion[]>([]);
-  const { questions, removeAllQuestions } = useQuestions();
+  const { questions, removeQuestion, removeAllQuestions } = useQuestions();
 
   return (
     <div className="mb-10">
@@ -90,6 +90,12 @@ const QuestionsList = () => {
                 className="px-3.5 relative"
                 onClick={() => {
                   if (removeMode && itemsToRemove.length) {
+                    itemsToRemove.forEach((item) => {
+                      removeQuestion(item.id);
+                    });
+
+                    setItemsToRemove([]);
+                    toggleRemoveMode();
                   } else {
                     toggleRemoveMode();
                   }

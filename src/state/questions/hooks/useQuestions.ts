@@ -7,8 +7,9 @@ import {
   removeAllQuestions as removeAllQuestionsAction,
   removeLastAddedQuestion,
   removeQuestion as removeQuestionAction,
+  setConfig,
 } from '../actions';
-import { IQuestion } from '../reducer';
+import { IConfig, IQuestion } from '../reducer';
 
 export const useQuestions = () => {
   const dispatch = useDispatch();
@@ -19,5 +20,19 @@ export const useQuestions = () => {
   const removeLastQuestion = useCallback(() => dispatch(removeLastAddedQuestion()), [dispatch]);
   const removeAllQuestions = useCallback(() => dispatch(removeAllQuestionsAction()), [dispatch]);
 
-  return { questions, addQuestion, removeQuestion, removeLastQuestion, removeAllQuestions };
+  type configKey = keyof IConfig;
+
+  const setConfiguration = useCallback(
+    function applyConfig<T extends IConfig, K extends configKey>(key: K, value: T[K]) {
+      dispatch(setConfig({ key, value }));
+    },
+    [dispatch],
+  );
+
+  const config = useSelector((state: AppState) => ({
+    ...state.questions.config,
+    set: setConfiguration,
+  }));
+
+  return { questions, addQuestion, removeQuestion, removeLastQuestion, removeAllQuestions, config };
 };
