@@ -1,7 +1,16 @@
 :focus-visible,
 button:focus
   outline: none
-  @apply ring-4 ring-purple-100 border border-purple-500
+
+input[type=text],
+input[type=email],
+input[type=password],
+input[type=tel],
+input[type=search],
+textarea
+  &:focus-visible,
+  &:focus
+    @apply ring-4 ring-purple-100 border border-purple-500
 
 html
   font-size: var(--font-size-base, 16px)
