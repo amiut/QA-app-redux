@@ -13,7 +13,7 @@ const AddQuestionForm = () => {
   const addQuestionHeading = useRef<HTMLHeadingElement>(null);
   const addForm = useRef<HTMLFormElement>(null);
 
-  const { addQuestion, removeLastQuestion } = useQuestions();
+  const { addQuestion, removeLastQuestion, config } = useQuestions();
 
   useOnClickOutside(addQuestionHeading, () => {
     if (addQuestionHelp) toggleAddQuestionHelp();
@@ -105,7 +105,7 @@ const AddQuestionForm = () => {
               setAnswer(e.target.value);
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+              if (e.key === 'Enter' && !e.shiftKey && config.enterKeyIsSend) {
                 e.preventDefault();
                 addQuestionHandler();
               }
