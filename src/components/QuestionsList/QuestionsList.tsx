@@ -21,11 +21,11 @@ const QuestionsList = () => {
   return (
     <div className="mb-10">
       <h2
-        className="text-3xl font-bold flex items-center mb-6 tooltip max-w-max mx-auto"
+        className="text-xl sm:text-3xl font-bold flex items-center mb-6 tooltip max-w-max mx-auto"
         aria-label="You can see a list of questions here, modify or delete them"
       >
         List of Questions{' '}
-        <small className="font-light text-white ml-2 px-3 rounded-lg bg-purple-600 text-base">
+        <small className="font-light text-white ml-2 px-3 rounded-lg bg-purple-600 text-sm sm:text-base">
           {questions.length} Questions
         </small>
       </h2>

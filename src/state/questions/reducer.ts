@@ -1,4 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
+import { v4 as uuidv4 } from 'uuid';
 
 import { addQuestion, removeLastAddedQuestion, removeQuestion } from './actions';
 
@@ -18,8 +19,14 @@ export interface IQuestionsState {
   activities: IActivity[];
 }
 
+const initialQuestion: IQuestion = {
+  id: uuidv4(),
+  question: 'How to ask a question?',
+  answer: 'It is as simple as filling the "Add question" form below and hit enter',
+};
+
 export const initialState: IQuestionsState = {
-  questions: [],
+  questions: [initialQuestion],
   activities: [],
 };
 
@@ -44,12 +51,12 @@ export default createReducer(initialState, (builder) =>
         }
       }
     })
-    .addCase(removeQuestion, ({ questions, activities }, action) => {
-      activities.push({
+    .addCase(removeQuestion, (state, action) => {
+      state.activities.push({
         id: action.payload,
         type: 'removed',
       });
 
-      return { activities, questions: questions.filter((question) => question.id !== action.payload) };
+      state.questions = state.questions.filter((question) => question.id !== action.payload);
     }),
 );
