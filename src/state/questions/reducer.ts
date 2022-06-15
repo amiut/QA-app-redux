@@ -1,7 +1,14 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
-import { addQuestion, removeAllQuestions, removeLastAddedQuestion, removeQuestion, setConfig } from './actions';
+import {
+  addQuestion,
+  addQuestionAsync,
+  removeAllQuestions,
+  removeLastAddedQuestion,
+  removeQuestion,
+  setConfig,
+} from './actions';
 
 export interface IQuestion {
   question: string;
@@ -48,6 +55,9 @@ export default createReducer(initialState, (builder) =>
         item: action.payload,
         type: 'added',
       });
+    })
+    .addCase(addQuestionAsync.fulfilled, ({ questions }, action) => {
+      questions.push(action.payload);
     })
     .addCase(removeLastAddedQuestion, ({ questions, activities }) => {
       if (questions.length) {

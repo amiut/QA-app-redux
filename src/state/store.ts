@@ -7,6 +7,11 @@ let store: ReturnType<typeof makeStore>;
 
 export function makeStore() {
   return configureStore({
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        thunk: undefined,
+        serializableCheck: true,
+      }),
     reducer: combineReducers({
       questions: questionsReducer,
     }),

@@ -2,18 +2,20 @@ import Icon from '@components/Common/Icon';
 import useOnClickOutside from '@hooks/useClickOutside';
 import useToggle from '@hooks/useToggle';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useQuestions } from 'state/questions/hooks/useQuestions';
 import { v4 as uuidv4 } from 'uuid';
 
 const AddQuestionForm = () => {
   const [addQuestionHelp, toggleAddQuestionHelp] = useToggle();
+  const [processing, setProcessing] = useState<boolean>(false);
   const [question, setQuestion] = useState<string>('');
   const [answer, setAnswer] = useState<string>('');
   const [errors, setErrors] = useState({ question: '', answer: '' });
   const addQuestionHeading = useRef<HTMLHeadingElement>(null);
   const addForm = useRef<HTMLFormElement>(null);
 
-  const { addQuestion, removeLastQuestion, config } = useQuestions();
+  const { addQuestion, addQuestionAsyncly, removeLastQuestion, config } = useQuestions();
 
   useOnClickOutside(addQuestionHeading, () => {
     if (addQuestionHelp) toggleAddQuestionHelp();
@@ -44,9 +46,30 @@ const AddQuestionForm = () => {
       return;
     }
 
-    addQuestion({ question, answer, id: uuidv4() });
-    setQuestion('');
-    setAnswer('');
+    const newQuestion = { question, answer, id: uuidv4() };
+
+    if (config.sendAfter5s) {
+      setProcessing(true);
+      const questionAdd = addQuestionAsyncly(newQuestion).then(
+        () => {
+          setProcessing(false);
+          setQuestion('');
+          setAnswer('');
+        },
+        () => {
+          setProcessing(true);
+        },
+      );
+
+      toast.promise(questionAdd, {
+        pending: 'Adding Question, please wait...',
+        success: 'Question Added!!',
+      });
+    } else {
+      addQuestion(newQuestion);
+      setQuestion('');
+      setAnswer('');
+    }
   };
 
   return (
@@ -82,6 +105,7 @@ const AddQuestionForm = () => {
             id="question"
             placeholder="question"
             value={question}
+            disabled={processing}
             onChange={(e) => {
               setErrors((errors) => ({ ...errors, question: '' }));
               setQuestion(e.target.value);
@@ -100,6 +124,7 @@ const AddQuestionForm = () => {
             className="block pt-3 w-full resize-none h-24 mb-1 border border-neutral-400 rounded-lg px-4"
             placeholder="answer"
             value={answer}
+            disabled={processing}
             onChange={(e) => {
               setErrors((errors) => ({ ...errors, answer: '' }));
               setAnswer(e.target.value);
@@ -114,7 +139,11 @@ const AddQuestionForm = () => {
           {errors.answer && <div className="text-red-600 text-sm font-medium">{errors.answer}</div>}
         </div>
 
-        <button className="text-white font-bold bg-purple-700 px-5 py-3 rounded-lg mx-auto table" type="submit">
+        <button
+          disabled={processing}
+          className="text-white font-bold bg-purple-700 px-5 py-3 rounded-lg mx-auto table"
+          type="submit"
+        >
           + Add question
         </button>
       </form>
