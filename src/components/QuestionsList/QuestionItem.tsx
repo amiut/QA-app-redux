@@ -1,4 +1,6 @@
+import Icon from '@components/Common/Icon';
 import React from 'react';
+import { useQuestions } from 'state/questions/hooks/useQuestions';
 import { IQuestion } from 'state/questions/reducer';
 
 interface IProps {
@@ -9,10 +11,33 @@ interface IProps {
 }
 
 const QuestionItem = ({ question, head: QuestionWrapper, body: AnswerWrapper, expanded = false }: IProps) => {
+  const { removeQuestion } = useQuestions();
+
   return (
     <>
-      <QuestionWrapper className={`py-3 px-4 border-b ${expanded ? 'border-neutral-200' : 'border-transparent'}`}>
-        {question.question}
+      <QuestionWrapper className={`py-3 flex px-4 border-b ${expanded ? 'border-neutral-200' : 'border-transparent'}`}>
+        <span className="flex-1 min-w-0">{question.question}</span>
+
+        <span className="actions ml-3">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <Icon name="edit" className="w-6 h-5" />
+          </button>
+          <button
+            type="button"
+            className="ml-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              removeQuestion(question.id);
+            }}
+          >
+            <Icon name="trash" className="w-6 h-5" />
+          </button>
+        </span>
       </QuestionWrapper>
 
       <AnswerWrapper className="p-4">{question.answer}</AnswerWrapper>

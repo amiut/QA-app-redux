@@ -24,6 +24,8 @@ const AddQuestionForm = () => {
 
   return (
     <div className="max-w-xl mx-auto">
+      <h2 className="text-3xl font-bold flex items-center justify-center mb-6">Add a Question</h2>
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
