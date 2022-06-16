@@ -10,6 +10,7 @@ import {
   removeQuestion as removeQuestionAction,
   setConfig,
   sortQuestions,
+  undoQuestions,
 } from '../actions';
 import { IConfig, IQuestion } from '../reducer';
 
@@ -21,6 +22,7 @@ export const useQuestions = () => {
   const removeQuestion = useCallback((id: string) => dispatch(removeQuestionAction(id)), [dispatch]);
   const removeLastQuestion = useCallback(() => dispatch(removeLastAddedQuestion()), [dispatch]);
   const removeAllQuestions = useCallback(() => dispatch(removeAllQuestionsAction()), [dispatch]);
+  const restorePreviousQuestions = useCallback(() => dispatch(undoQuestions()), [dispatch]);
   const sortAllQuestions = useCallback(() => dispatch(sortQuestions()), [dispatch]);
 
   const addQuestionAsyncly = (question: IQuestion) => dispatch(addQuestionAsync(question));
@@ -49,5 +51,6 @@ export const useQuestions = () => {
     config,
     addQuestionAsyncly,
     sortAllQuestions,
+    restorePreviousQuestions,
   };
 };

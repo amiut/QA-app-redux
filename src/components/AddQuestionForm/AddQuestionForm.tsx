@@ -69,6 +69,8 @@ const AddQuestionForm = () => {
       addQuestion(newQuestion);
       setQuestion('');
       setAnswer('');
+
+      toast.success('Question Added!!');
     }
   };
 

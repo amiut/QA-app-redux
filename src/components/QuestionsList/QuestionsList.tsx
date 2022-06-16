@@ -1,8 +1,10 @@
 import Icon from '@components/Common/Icon';
+import MessageWithUndo from '@components/Common/MessageWithUndo';
 import useToggle from '@hooks/useToggle';
 import { Accordion, AccordionGroup, AccordionPanel, AccordionToggle, useAccordion } from 'accordionify';
 import produce from 'immer';
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import { useQuestions } from 'state/questions/hooks/useQuestions';
 import { IQuestion } from 'state/questions/reducer';
 
@@ -129,6 +131,8 @@ const QuestionsList = () => {
                     onClick={() => {
                       removeAllQuestions();
                       toggleRemoveExpand();
+
+                      toast.success(<MessageWithUndo message="Questions Removed!!" />);
                     }}
                   >
                     Remove All Questions

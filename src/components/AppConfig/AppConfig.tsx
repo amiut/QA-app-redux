@@ -4,7 +4,7 @@ const AppConfig = () => {
   const { config } = useQuestions();
 
   return (
-    <div className="flex mb-10">
+    <div className="flex mb-10 justify-center">
       <div
         className="select-none cursor-pointer mr-5 last:mr-0"
         onClick={() => {

@@ -1,6 +1,8 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
+const HISTORY_MAX_LENGTH = 5;
+
 import {
   addQuestion,
   addQuestionAsync,
@@ -9,6 +11,7 @@ import {
   removeQuestion,
   setConfig,
   sortQuestions,
+  undoQuestions,
 } from './actions';
 
 export interface IQuestion {
@@ -29,72 +32,77 @@ export interface IConfig {
 
 export interface IQuestionsState {
   questions: IQuestion[];
-  activities: IActivity[];
+  history: IQuestion[][];
   config: IConfig;
 }
 
-const initialQuestion: IQuestion = {
-  id: uuidv4(),
-  question: 'How to ask a question?',
-  answer: 'It is as simple as filling the "Add question" form below and hit enter',
-};
+const initialQuestions: IQuestion[] = [
+  {
+    id: uuidv4(),
+    question: 'How to ask a question?',
+    answer: 'It is as simple as filling the "Add question" form below and hit enter',
+  },
+];
 
 export const initialState: IQuestionsState = {
-  questions: [initialQuestion],
-  activities: [],
+  questions: initialQuestions,
+  history: [initialQuestions],
   config: {
     enterKeyIsSend: true,
     sendAfter5s: false,
   },
 };
 
+function addToHistory(history: IQuestion[][], questions: IQuestion[]) {
+  history.push(questions);
+
+  if (history.length > HISTORY_MAX_LENGTH) {
+    history.shift();
+  }
+}
+
 export default createReducer(initialState, (builder) =>
   builder
-    .addCase(addQuestion, ({ questions, activities }, action) => {
-      questions.push(action.payload);
-      activities.push({
-        item: action.payload,
-        type: 'added',
-      });
-    })
-    .addCase(addQuestionAsync.fulfilled, ({ questions }, action) => {
-      questions.push(action.payload);
-    })
-    .addCase(removeLastAddedQuestion, ({ questions, activities }) => {
-      if (questions.length) {
-        const question = questions.pop();
+    .addCase(undoQuestions, (state) => {
+      const prevQuestions = state.history.pop();
 
-        if (question) {
-          activities.push({
-            item: question,
-            type: 'removed',
-          });
-        }
+      if (prevQuestions) {
+        state.questions = prevQuestions;
+      }
+    })
+    .addCase(addQuestion, ({ questions, history }, action) => {
+      addToHistory(history, questions);
+      questions.push(action.payload);
+    })
+    .addCase(addQuestionAsync.fulfilled, ({ questions, history }, action) => {
+      addToHistory(history, questions);
+      questions.push(action.payload);
+    })
+    .addCase(removeLastAddedQuestion, ({ questions, history }) => {
+      if (questions.length) {
+        addToHistory(history, questions);
+        questions.pop();
       }
     })
     .addCase(removeAllQuestions, (state) => {
-      state.activities.push({
-        type: 'removedAll',
-        item: state.questions,
-      });
+      addToHistory(state.history, state.questions);
       state.questions = [];
     })
     .addCase(removeQuestion, (state, action) => {
       const question = state.questions.find((q) => q.id === action.payload);
 
       if (question) {
-        state.activities.push({
-          item: question,
-          type: 'removed',
-        });
+        addToHistory(state.history, state.questions);
 
         state.questions = state.questions.filter((question) => question.id !== action.payload);
       }
     })
     .addCase(sortQuestions, (state) => {
+      addToHistory(state.history, state.questions);
       state.questions.sort((a, b) => a.question.localeCompare(b.question));
     })
     .addCase(setConfig, (state, action) => {
+      addToHistory(state.history, state.questions);
       state.config[action.payload.key] = action.payload.value;
     }),
 );
