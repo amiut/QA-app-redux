@@ -8,7 +8,11 @@ const AppConfig = () => {
 
   return (
     <>
-      <button type="button" onClick={toggleShowConfig} className="fixed top-4 left-4">
+      <button
+        type="button"
+        onClick={toggleShowConfig}
+        className="fixed bg-white shadow-md w-8 h-8 flex items-center justify-center rounded-md top-1 left-1 md:top-4 md:left-4"
+      >
         <Icon name="gear" className="w-6 h-6" />
       </button>
       {showConfig && (
@@ -28,7 +32,7 @@ const AppConfig = () => {
               config.set('sendAfter5s', !config.sendAfter5s);
             }}
           >
-            Simulate promises(5s): <strong>{config.sendAfter5s ? 'yes' : 'no'}</strong>
+            Simulate Async(5s): <strong>{config.sendAfter5s ? 'yes' : 'no'}</strong>
           </div>
         </div>
       )}

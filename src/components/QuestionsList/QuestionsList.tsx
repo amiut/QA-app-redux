@@ -81,13 +81,13 @@ const QuestionsList = () => {
             ))}
           </AccordionGroup>
 
-          <div className="flex justify-center">
+          <div className="flex flex-col sm:flex-row justify-center">
             <button
               onClick={() => {
                 sortAllQuestions();
               }}
               type="button"
-              className="bg-indigo-500 text-sm font-medium text-white h-8 px-3.5 mr-5 rounded-md"
+              className="bg-indigo-500 text-sm font-medium text-white h-8 px-3.5 mb-3 sm:mb-0 sm:mr-5 rounded-md"
             >
               Sort by A-Z
             </button>
@@ -95,7 +95,7 @@ const QuestionsList = () => {
             <div className="bg-red-600 relative text-sm font-medium text-white h-8 rounded-md flex">
               <button
                 type="button"
-                className="px-3.5 relative"
+                className="px-3.5 relative flex-1 min-w-0"
                 onClick={() => {
                   if (removeMode && itemsToRemove.length) {
                     removeQuestions(itemsToRemove.map((q) => q.id));
