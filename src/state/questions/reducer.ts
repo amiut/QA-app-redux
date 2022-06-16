@@ -12,7 +12,10 @@ import {
   removeQuestion,
   setConfig,
   sortQuestions,
+  stageQuestion,
   undoQuestions,
+  unStageQuestion,
+  updateQuestion,
 } from './actions';
 
 export interface IQuestion {
@@ -34,6 +37,7 @@ export interface IConfig {
 export interface IQuestionsState {
   questions: IQuestion[];
   history: IQuestion[][];
+  questionToEdit: IQuestion | null;
   config: IConfig;
 }
 
@@ -48,6 +52,7 @@ const initialQuestions: IQuestion[] = [
 export const initialState: IQuestionsState = {
   questions: initialQuestions,
   history: [],
+  questionToEdit: null,
   config: {
     enterKeyIsSend: true,
     sendAfter5s: false,
@@ -122,6 +127,18 @@ export default createReducer(initialState, (builder) =>
       }
 
       state.questions.sort((a, b) => a.question.localeCompare(b.question));
+    })
+    .addCase(stageQuestion, (state, action) => {
+      state.questionToEdit = action.payload;
+    })
+    .addCase(unStageQuestion, (state) => {
+      state.questionToEdit = null;
+    })
+    .addCase(updateQuestion, (state, { payload }) => {
+      if (payload.id) {
+        const index = state.questions.findIndex((question) => question.id === payload.id);
+        if (index !== -1) state.questions[index] = payload;
+      }
     })
     .addCase(setConfig, (state, action) => {
       state.config[action.payload.key] = action.payload.value;

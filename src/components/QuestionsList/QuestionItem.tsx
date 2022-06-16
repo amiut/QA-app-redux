@@ -2,6 +2,7 @@ import Icon from '@components/Common/Icon';
 import MessageWithUndo from '@components/Common/MessageWithUndo';
 import React from 'react';
 import { toast } from 'react-toastify';
+import useEditQuestion from 'state/questions/hooks/useEditQuestion';
 import { useQuestions } from 'state/questions/hooks/useQuestions';
 import { IQuestion } from 'state/questions/reducer';
 
@@ -14,6 +15,7 @@ interface IProps {
 
 const QuestionItem = ({ question, head: QuestionWrapper, body: AnswerWrapper, expanded = false }: IProps) => {
   const { removeQuestion } = useQuestions();
+  const { stageQuestion } = useEditQuestion();
 
   return (
     <>
@@ -25,6 +27,7 @@ const QuestionItem = ({ question, head: QuestionWrapper, body: AnswerWrapper, ex
             type="button"
             onClick={(e) => {
               e.stopPropagation();
+              stageQuestion(question);
             }}
           >
             <Icon name="edit" className="w-6 h-5" />

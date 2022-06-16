@@ -16,6 +16,9 @@ export const REMOVE_LAST_QUESTION = 'questions/removeLastQuestion';
 export const REMOVE_ALL_QUESTION = 'questions/removeAllQuestions';
 export const SORT_QUESTIONS = 'questions/sortQuestions';
 export const UNDO_QUESTIONS = 'questions/undoQuestions';
+export const STAGE_QUESTION = 'questions/stageQuestion';
+export const UNSTAGE_QUESTION = 'questions/unStageQuestion';
+export const UPDATE_QUESTION = 'questions/updateQuestion';
 export const SET_CONFIG = 'questions/setConfig';
 
 export const addQuestion = createAction<IQuestion>(ADD_QUESTION);
@@ -25,6 +28,9 @@ export const removeLastAddedQuestion = createAction(REMOVE_LAST_QUESTION);
 export const removeAllQuestions = createAction(REMOVE_ALL_QUESTION);
 export const sortQuestions = createAction(SORT_QUESTIONS);
 export const undoQuestions = createAction(UNDO_QUESTIONS);
+export const stageQuestion = createAction<IQuestion>(STAGE_QUESTION);
+export const unStageQuestion = createAction(UNSTAGE_QUESTION);
+export const updateQuestion = createAction<IQuestion>(UPDATE_QUESTION);
 export const setConfig = createAction<{ key: keyof IConfig; value: any }>(SET_CONFIG);
 
 export const addQuestionAsync = createAsyncThunk<IQuestion, IQuestion>(ADD_QUESTION_ASYNC, async (question) => {
