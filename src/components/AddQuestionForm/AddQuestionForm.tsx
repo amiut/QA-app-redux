@@ -1,7 +1,7 @@
 import Icon from '@components/Common/Icon';
 import useOnClickOutside from '@hooks/useClickOutside';
 import useToggle from '@hooks/useToggle';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useQuestions } from 'state/questions/hooks/useQuestions';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,25 +15,11 @@ const AddQuestionForm = () => {
   const addQuestionHeading = useRef<HTMLHeadingElement>(null);
   const addForm = useRef<HTMLFormElement>(null);
 
-  const { addQuestion, addQuestionAsyncly, removeLastQuestion, config } = useQuestions();
+  const { addQuestion, addQuestionAsyncly, config } = useQuestions();
 
   useOnClickOutside(addQuestionHeading, () => {
     if (addQuestionHelp) toggleAddQuestionHelp();
   });
-
-  useEffect(() => {
-    const undo = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === 'z') {
-        removeLastQuestion();
-      }
-    };
-
-    document.addEventListener('keydown', undo);
-
-    return () => {
-      document.removeEventListener('keydown', undo);
-    };
-  }, [removeLastQuestion]);
 
   const addQuestionHandler = () => {
     if (!question || question.length < 3) {

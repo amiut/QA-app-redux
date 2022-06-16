@@ -1,4 +1,4 @@
-import { createReducer } from '@reduxjs/toolkit';
+import { createReducer, current } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
 const HISTORY_MAX_LENGTH = 5;
@@ -47,7 +47,7 @@ const initialQuestions: IQuestion[] = [
 
 export const initialState: IQuestionsState = {
   questions: initialQuestions,
-  history: [initialQuestions],
+  history: [],
   config: {
     enterKeyIsSend: true,
     sendAfter5s: false,
@@ -67,33 +67,42 @@ export default createReducer(initialState, (builder) =>
     .addCase(undoQuestions, (state) => {
       const prevQuestions = state.history.pop();
 
-      if (prevQuestions) {
+      if (prevQuestions && prevQuestions.length) {
         state.questions = prevQuestions;
       }
     })
     .addCase(addQuestion, ({ questions, history }, action) => {
-      addToHistory(history, questions);
+      if (questions.length) {
+        addToHistory(history, current(questions));
+      }
+
       questions.push(action.payload);
     })
     .addCase(addQuestionAsync.fulfilled, ({ questions, history }, action) => {
-      addToHistory(history, questions);
+      if (questions.length) {
+        addToHistory(history, current(questions));
+      }
+
       questions.push(action.payload);
     })
     .addCase(removeLastAddedQuestion, ({ questions, history }) => {
       if (questions.length) {
-        addToHistory(history, questions);
+        addToHistory(history, current(questions));
         questions.pop();
       }
     })
     .addCase(removeAllQuestions, (state) => {
-      addToHistory(state.history, state.questions);
+      if (state.questions.length) {
+        addToHistory(state.history, current(state.questions));
+      }
+
       state.questions = [];
     })
     .addCase(removeQuestion, (state, action) => {
       const question = state.questions.find((q) => q.id === action.payload);
 
       if (question) {
-        addToHistory(state.history, state.questions);
+        addToHistory(state.history, current(state.questions));
 
         state.questions = state.questions.filter((question) => question.id !== action.payload);
       }
@@ -102,17 +111,19 @@ export default createReducer(initialState, (builder) =>
       const newQuestions = state.questions.filter((question) => action.payload.indexOf(question.id) === -1);
 
       if (newQuestions.length !== state.questions.length) {
-        addToHistory(state.history, state.questions);
+        addToHistory(state.history, current(state.questions));
 
         state.questions = newQuestions;
       }
     })
     .addCase(sortQuestions, (state) => {
-      addToHistory(state.history, state.questions);
+      if (state.questions.length) {
+        addToHistory(state.history, current(state.questions));
+      }
+
       state.questions.sort((a, b) => a.question.localeCompare(b.question));
     })
     .addCase(setConfig, (state, action) => {
-      addToHistory(state.history, state.questions);
       state.config[action.payload.key] = action.payload.value;
     }),
 );
