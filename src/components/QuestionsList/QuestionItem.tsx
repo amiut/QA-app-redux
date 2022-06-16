@@ -1,5 +1,7 @@
 import Icon from '@components/Common/Icon';
+import MessageWithUndo from '@components/Common/MessageWithUndo';
 import React from 'react';
+import { toast } from 'react-toastify';
 import { useQuestions } from 'state/questions/hooks/useQuestions';
 import { IQuestion } from 'state/questions/reducer';
 
@@ -33,6 +35,7 @@ const QuestionItem = ({ question, head: QuestionWrapper, body: AnswerWrapper, ex
             onClick={(e) => {
               e.stopPropagation();
               removeQuestion(question.id);
+              toast.success(<MessageWithUndo message="Questions Removed!!" />);
             }}
           >
             <Icon name="trash" className="w-6 h-5" />

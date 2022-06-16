@@ -7,6 +7,7 @@ import {
   addQuestionAsync,
   removeAllQuestions as removeAllQuestionsAction,
   removeLastAddedQuestion,
+  removeMultiQuestions,
   removeQuestion as removeQuestionAction,
   setConfig,
   sortQuestions,
@@ -20,6 +21,7 @@ export const useQuestions = () => {
 
   const addQuestion = useCallback((question: IQuestion) => dispatch(addQuestionAction(question)), [dispatch]);
   const removeQuestion = useCallback((id: string) => dispatch(removeQuestionAction(id)), [dispatch]);
+  const removeQuestions = useCallback((ids: string[]) => dispatch(removeMultiQuestions(ids)), [dispatch]);
   const removeLastQuestion = useCallback(() => dispatch(removeLastAddedQuestion()), [dispatch]);
   const removeAllQuestions = useCallback(() => dispatch(removeAllQuestionsAction()), [dispatch]);
   const restorePreviousQuestions = useCallback(() => dispatch(undoQuestions()), [dispatch]);
@@ -46,6 +48,7 @@ export const useQuestions = () => {
     questions,
     addQuestion,
     removeQuestion,
+    removeQuestions,
     removeLastQuestion,
     removeAllQuestions,
     config,

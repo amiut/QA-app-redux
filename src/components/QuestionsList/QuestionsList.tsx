@@ -25,7 +25,7 @@ const QuestionsList = () => {
   const [removeTypeExpanded, toggleRemoveExpand] = useToggle();
   const [removeMode, toggleRemoveMode] = useToggle();
   const [itemsToRemove, setItemsToRemove] = useState<IQuestion[]>([]);
-  const { questions, removeQuestion, removeAllQuestions, sortAllQuestions } = useQuestions();
+  const { questions, removeQuestion, removeQuestions, removeAllQuestions, sortAllQuestions } = useQuestions();
 
   return (
     <div className="mb-10">
@@ -98,12 +98,11 @@ const QuestionsList = () => {
                 className="px-3.5 relative"
                 onClick={() => {
                   if (removeMode && itemsToRemove.length) {
-                    itemsToRemove.forEach((item) => {
-                      removeQuestion(item.id);
-                    });
+                    removeQuestions(itemsToRemove.map((q) => q.id));
 
                     setItemsToRemove([]);
                     toggleRemoveMode();
+                    toast.success(<MessageWithUndo message="Questions Removed!!" />);
                   } else {
                     toggleRemoveMode();
                   }

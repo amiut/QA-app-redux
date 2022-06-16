@@ -8,6 +8,7 @@ import {
   addQuestionAsync,
   removeAllQuestions,
   removeLastAddedQuestion,
+  removeMultiQuestions,
   removeQuestion,
   setConfig,
   sortQuestions,
@@ -95,6 +96,15 @@ export default createReducer(initialState, (builder) =>
         addToHistory(state.history, state.questions);
 
         state.questions = state.questions.filter((question) => question.id !== action.payload);
+      }
+    })
+    .addCase(removeMultiQuestions, (state, action) => {
+      const newQuestions = state.questions.filter((question) => action.payload.indexOf(question.id) === -1);
+
+      if (newQuestions.length !== state.questions.length) {
+        addToHistory(state.history, state.questions);
+
+        state.questions = newQuestions;
       }
     })
     .addCase(sortQuestions, (state) => {
