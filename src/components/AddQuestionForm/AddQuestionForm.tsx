@@ -5,14 +5,32 @@ import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import useEditQuestion from 'state/questions/hooks/useEditQuestion';
 import { useQuestions } from 'state/questions/hooks/useQuestions';
+import questionIsValid from 'Utils/questionIsValid';
 import { v4 as uuidv4 } from 'uuid';
+
+interface Validation {
+  question: string[];
+  answer: string[];
+}
+
+const renderErrors = (messages: string[]) => {
+  return (
+    <div className="errros">
+      {messages.map((err, i) => (
+        <div key={i} className="text-red-600 text-sm mb-1.5 font-medium">
+          {err}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const AddQuestionForm = () => {
   const [addQuestionHelp, toggleAddQuestionHelp] = useToggle();
   const [processing, setProcessing] = useState<boolean>(false);
   const [question, setQuestion] = useState<string>('');
   const [answer, setAnswer] = useState<string>('');
-  const [errors, setErrors] = useState({ question: '', answer: '' });
+  const [errors, setErrors] = useState<Validation>({ question: [], answer: [] });
   const addQuestionHeading = useRef<HTMLHeadingElement>(null);
   const addForm = useRef<HTMLFormElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
@@ -38,49 +56,85 @@ const AddQuestionForm = () => {
     if (addQuestionHelp) toggleAddQuestionHelp();
   });
 
-  const validateForm = () => {
-    if (!question || question.length < 3) {
-      setErrors((errors) => ({ ...errors, question: 'Please enter a question with minimum 3 chars' }));
-      throw new Error();
+  const validateField = (field: string): string[] | boolean => {
+    let errors: string[] = [];
+
+    switch (field) {
+      case 'question':
+        if (!question || question.length < 3) {
+          errors.push('Please enter a question with minimum 3 chars');
+        }
+
+        if (question.match(/^\s*$/g)) {
+          errors.push('Please do not enter only spaces in the question');
+        }
+
+        if (!questionIsValid(question)) {
+          errors.push('Question is not valid in any of our supported languages');
+        }
+
+        break;
+
+      case 'answer':
+        if (!answer || answer.length < 3) {
+          errors.push('Please enter an answer with minimum 3 chars');
+        }
+
+        if (answer.match(/^\s*$/g)) {
+          errors.push('Please do not enter only spaces in the answer');
+        }
+        break;
     }
 
-    if (!answer || answer.length < 3) {
-      setErrors((errors) => ({ ...errors, answer: 'Please enter an answer with minimum 3 chars' }));
-      throw new Error();
+    return errors.length ? errors : false;
+  };
+
+  const validateForm = () => {
+    const questionValidation = validateField('question');
+    const answerValidation = validateField('answer');
+
+    if (questionValidation) {
+      setErrors((errors) => ({ ...errors, question: questionValidation as string[] }));
+    }
+
+    if (answerValidation) {
+      setErrors((errors) => ({ ...errors, answer: answerValidation as string[] }));
     }
   };
 
   const addQuestionHandler = () => {
-    try {
-      validateForm();
+    validateForm();
 
-      const newQuestion = { question, answer, id: uuidv4() };
+    if (errors.question.length || errors.answer.length) {
+      return;
+    }
 
-      if (config.sendAfter5s) {
-        setProcessing(true);
-        const questionAdd = addQuestionAsyncly(newQuestion).then(
-          () => {
-            setProcessing(false);
-            setQuestion('');
-            setAnswer('');
-          },
-          () => {
-            setProcessing(true);
-          },
-        );
+    const newQuestion = { question, answer, id: uuidv4() };
 
-        toast.promise(questionAdd, {
-          pending: 'Adding Question, please wait...',
-          success: 'Question Added!!',
-        });
-      } else {
-        addQuestion(newQuestion);
-        setQuestion('');
-        setAnswer('');
+    if (config.sendAfter5s) {
+      setProcessing(true);
+      const questionAdd = addQuestionAsyncly(newQuestion).then(
+        () => {
+          setProcessing(false);
+          setQuestion('');
+          setAnswer('');
+        },
+        () => {
+          setProcessing(true);
+        },
+      );
 
-        toast.success('Question Added!!');
-      }
-    } catch (e) {}
+      toast.promise(questionAdd, {
+        pending: 'Adding Question, please wait...',
+        success: 'Question Added!!',
+      });
+    } else {
+      addQuestion(newQuestion);
+      setQuestion('');
+      setAnswer('');
+
+      toast.success('Question Added!!');
+    }
   };
 
   const editQuestionHandler = () => {
@@ -132,12 +186,12 @@ const AddQuestionForm = () => {
             value={question}
             disabled={processing}
             onChange={(e) => {
-              setErrors((errors) => ({ ...errors, question: '' }));
+              setErrors((errors) => ({ ...errors, question: [] }));
               setQuestion(e.target.value);
             }}
           />
 
-          {errors.question && <div className="text-red-600 text-sm font-medium">{errors.question}</div>}
+          {renderErrors(errors.question)}
         </div>
 
         <div className="form-row mb-5">
@@ -151,7 +205,7 @@ const AddQuestionForm = () => {
             value={answer}
             disabled={processing}
             onChange={(e) => {
-              setErrors((errors) => ({ ...errors, answer: '' }));
+              setErrors((errors) => ({ ...errors, answer: [] }));
               setAnswer(e.target.value);
             }}
             onKeyDown={(e) => {
@@ -161,7 +215,7 @@ const AddQuestionForm = () => {
               }
             }}
           ></textarea>
-          {errors.answer && <div className="text-red-600 text-sm font-medium">{errors.answer}</div>}
+          {renderErrors(errors.answer)}
         </div>
 
         <div className="flex justify-center">

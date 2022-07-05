@@ -3,7 +3,7 @@ import MessageWithUndo from '@components/Common/MessageWithUndo';
 import useToggle from '@hooks/useToggle';
 import { Accordion, AccordionGroup, AccordionPanel, AccordionToggle, useAccordion } from 'accordionify';
 import produce from 'immer';
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useQuestions } from 'state/questions/hooks/useQuestions';
 import { IQuestion } from 'state/questions/reducer';
@@ -20,6 +20,8 @@ const AccordionifiedQItem = ({ question }: { question: IQuestion }) => {
 
   return <QuestionItem question={question} head={AccordionToggle} body={AccordionPanel} expanded={expanded} />;
 };
+
+const MemorizedQItem = memo(AccordionifiedQItem);
 
 const QuestionsList = () => {
   const [removeTypeExpanded, toggleRemoveExpand] = useToggle();
@@ -74,7 +76,7 @@ const QuestionsList = () => {
 
                 <div className="flex-1 min-w-0">
                   <Accordion className="w-full border mb-3 border-neutral-200 rounded-lg">
-                    <AccordionifiedQItem question={question} />
+                    <MemorizedQItem question={question} />
                   </Accordion>
                 </div>
               </div>

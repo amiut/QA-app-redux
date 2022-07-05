@@ -1,6 +1,6 @@
 import Icon from '@components/Common/Icon';
 import MessageWithUndo from '@components/Common/MessageWithUndo';
-import React from 'react';
+import React, { memo } from 'react';
 import { toast } from 'react-toastify';
 import useEditQuestion from 'state/questions/hooks/useEditQuestion';
 import { useQuestions } from 'state/questions/hooks/useQuestions';
@@ -16,6 +16,8 @@ interface IProps {
 const QuestionItem = ({ question, head: QuestionWrapper, body: AnswerWrapper, expanded = false }: IProps) => {
   const { removeQuestion } = useQuestions();
   const { stageQuestion } = useEditQuestion();
+
+  console.info(question.id);
 
   return (
     <>
@@ -51,4 +53,4 @@ const QuestionItem = ({ question, head: QuestionWrapper, body: AnswerWrapper, ex
   );
 };
 
-export default QuestionItem;
+export default memo(QuestionItem);
