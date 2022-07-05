@@ -65,7 +65,7 @@ const AddQuestionForm = () => {
           errors.push('Please enter a question with minimum 3 chars');
         }
 
-        if (question.match(/^\s*$/g)) {
+        if (!question.trim() && question.length >= 3) {
           errors.push('Please do not enter only spaces in the question');
         }
 
