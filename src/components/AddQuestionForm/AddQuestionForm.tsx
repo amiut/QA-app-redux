@@ -93,48 +93,52 @@ const AddQuestionForm = () => {
     const questionValidation = validateField('question');
     const answerValidation = validateField('answer');
 
+    let hasErrros = false;
+
     if (questionValidation) {
       setErrors((errors) => ({ ...errors, question: questionValidation as string[] }));
+      hasErrros = true;
     }
 
     if (answerValidation) {
       setErrors((errors) => ({ ...errors, answer: answerValidation as string[] }));
+      hasErrros = true;
     }
+
+    if (hasErrros) throw new Error();
   };
 
   const addQuestionHandler = () => {
-    validateForm();
+    try {
+      validateForm();
 
-    if (errors.question.length || errors.answer.length) {
-      return;
-    }
+      const newQuestion = { question, answer, id: uuidv4() };
 
-    const newQuestion = { question, answer, id: uuidv4() };
+      if (config.sendAfter5s) {
+        setProcessing(true);
+        const questionAdd = addQuestionAsyncly(newQuestion).then(
+          () => {
+            setProcessing(false);
+            setQuestion('');
+            setAnswer('');
+          },
+          () => {
+            setProcessing(true);
+          },
+        );
 
-    if (config.sendAfter5s) {
-      setProcessing(true);
-      const questionAdd = addQuestionAsyncly(newQuestion).then(
-        () => {
-          setProcessing(false);
-          setQuestion('');
-          setAnswer('');
-        },
-        () => {
-          setProcessing(true);
-        },
-      );
+        toast.promise(questionAdd, {
+          pending: 'Adding Question, please wait...',
+          success: 'Question Added!!',
+        });
+      } else {
+        addQuestion(newQuestion);
+        setQuestion('');
+        setAnswer('');
 
-      toast.promise(questionAdd, {
-        pending: 'Adding Question, please wait...',
-        success: 'Question Added!!',
-      });
-    } else {
-      addQuestion(newQuestion);
-      setQuestion('');
-      setAnswer('');
-
-      toast.success('Question Added!!');
-    }
+        toast.success('Question Added!!');
+      }
+    } catch (_e) {}
   };
 
   const editQuestionHandler = () => {
